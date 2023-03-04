@@ -8,12 +8,52 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
+    @IBOutlet weak var basicCard: UIView!
+    
+    var centerOfCard: CGPoint!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        centerOfCard = self.basicCard.center
     }
 
 
+    @IBAction func swipeCard(_ sender: UIPanGestureRecognizer) {
+        // スワイプした時の情報をsenderから受け取り、senderのview(スワイプしたカード)を取得する
+        let card = sender.view!
+        // スワイプした位置情報（inのviewは親のViewなので、親のViewからどれぐらい動いたか）
+        let point = sender.translation(in: view)
+        // xyの座標を指定(カードの元々の座標に、動いた座標（point.x y）を足してあげる。)
+        card.center = CGPoint(x: card.center.x + point.x, y: card.center.y + point.y)
+        
+        // 角度を変える(0.785はラジアンの45度)
+        let xFromCenter = card.center.x - view.center.x
+        card.transform = CGAffineTransform(rotationAngle: xFromCenter / (view.frame.width / 2) * -0.785)
+        
+        if sender.state == UIGestureRecognizer.State.ended {
+            // 左に大きくスワイプ
+            if card.center.x < 75 {
+                UIView.animate(withDuration: 0.2, animations: {
+                    // 左から75ptより小さかったら、250ptまで飛ばす
+                    card.center = CGPoint(x: card.center.x - 250, y: card.center.y)
+                })
+                return
+            } else if card.center.x > self.view.frame.width - 75 {
+                UIView.animate(withDuration: 0.2, animations: {
+                    // 右から75ptより小さかったら、250ptまで呼ばす
+                    card.center = CGPoint(x: card.center.x + 250, y: card.center.y)
+                })
+                return
+            }
+            
+            // 元に戻る処理
+            UIView.animate(withDuration: 0.2, animations: {
+                card.center = self.centerOfCard
+                card.transform = .identity
+            })
+        }
+    }
+    
 }
 
