@@ -10,6 +10,7 @@ import UIKit
 class ViewController: UIViewController {
     
     @IBOutlet weak var basicCard: UIView!
+    @IBOutlet weak var likeImageView: UIImageView!
     
     var centerOfCard: CGPoint!
 
@@ -30,6 +31,16 @@ class ViewController: UIViewController {
         // 角度を変える(0.785はラジアンの45度)
         let xFromCenter = card.center.x - view.center.x
         card.transform = CGAffineTransform(rotationAngle: xFromCenter / (view.frame.width / 2) * -0.785)
+        
+        if xFromCenter > 0 {
+            self.likeImageView.image = UIImage(named: "good")
+            self.likeImageView.alpha = 1
+            self.likeImageView.tintColor = UIColor.red
+        } else if xFromCenter < 0 {
+            self.likeImageView.image = UIImage(named: "bad")
+            self.likeImageView.alpha = 1
+            self.likeImageView.tintColor = UIColor.blue
+        }
         
         if sender.state == UIGestureRecognizer.State.ended {
             // 左に大きくスワイプ
@@ -52,6 +63,7 @@ class ViewController: UIViewController {
                 card.center = self.centerOfCard
                 card.transform = .identity
             })
+            self.likeImageView.alpha = 0
         }
     }
     
